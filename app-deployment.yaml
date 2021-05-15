@@ -15,5 +15,12 @@ spec:
       containers:
       - name: api
         image: timguardian/talklike
+        envFrom:
+        - secretRef:
+            name: app-api-db-secret
+        - secretRef:
+            name: app-api-secret
+        - configMapRef:
+            name: app-api-config-map
         ports:
         - containerPort: 8000
