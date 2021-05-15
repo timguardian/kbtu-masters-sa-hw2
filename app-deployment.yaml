@@ -12,6 +12,35 @@ spec:
       labels:
         app: api
     spec:
+      volumes:
+      - name: code
+        persistentVolumeClaim:
+          claimName: code-pv-claim
+      - name: config
+        configMap:
+          name: nginx-config
+          items:
+          - key: config
+            path: default.conf
+      initContainers:
+        - args:
+            - /bin/bash
+            - -c
+            - (php artisan migrate || true) && (php artisan config:cache || true) && (php
+              artisan route:cache || true) && (cp -rp /var/www /code)
+          envFrom:
+            - secretRef:
+                name: app-api-db-secret
+            - secretRef:
+                name: app-api-secret
+            - configMapRef:
+                name: app-api-config-map
+          image: timguardian/talklike
+          imagePullPolicy: Always
+          name: artisan
+          volumeMounts:
+            - mountPath: /code
+              name: code
       containers:
       - name: api
         image: timguardian/talklike
@@ -23,4 +52,16 @@ spec:
         - configMapRef:
             name: app-api-config-map
         ports:
-        - containerPort: 8000
+        - containerPort: 9000
+        volumeMounts:
+        - name: code
+          mountPath: /code
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: code
+          mountPath: /code
+        - name: config
+          mountPath: /etc/nginx/conf.d
