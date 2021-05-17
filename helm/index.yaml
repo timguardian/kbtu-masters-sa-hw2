@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  db-chart:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2021-05-17T22:49:46.1736617+06:00"
+    description: A Helm chart for Statefulset
+    digest: 65c24addce08f1d39ac1f793115a698966066c638f06ea17c175ff4693e3b4c9
+    name: db-chart
+    type: application
+    urls:
+    - db-chart-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-05-17T22:49:46.1681113+06:00"
