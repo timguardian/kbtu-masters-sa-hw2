@@ -22,6 +22,16 @@ spec:
           items:
           - key: config
             path: default.conf
+      - name: logs
+        emptyDir: {}
+      - name: cache
+        emptyDir: {}
+      - name: testing
+        emptyDir: {}
+      - name: sessions
+        emptyDir: {}
+      - name: views
+        emptyDir: {}
       initContainers:
         - args:
             - /bin/bash
@@ -56,6 +66,16 @@ spec:
         volumeMounts:
         - name: code
           mountPath: {{ .Values.appContainer.volumeMountPath }}
+        - name: logs
+          mountPath: /code/www/storage/logs/
+        - name: cache
+          mountPath: /code/www/storage/framework/cache
+        - name: sessions
+          mountPath: /code/www/storage/framework/sessions
+        - name: views
+          mountPath: /code/www/storage/framework/views
+        - name: testing
+          mountPath: /code/www/storage/framework/testing
       - name: nginx
         image: "{{ .Values.proxyImage.repository }}:{{ .Values.proxyImage.tag }}"
         ports:

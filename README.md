@@ -5,6 +5,14 @@
 * Kubernetes: v1.19.7
 * Kubernetes context: docker-desktop
 
+> Before running the app, be sure configure your `hosts` file, as in the app there is ingress rules to allow requests only from specified hostnames. Add following rules to your hosts:
+```sh
+127.0.0.1  dev.talklike.kz
+127.0.0.1  qa.talklike.kz
+127.0.0.1  talklike.kz
+```
+On Windows, it's located in `C:\Windows\System32\drivers\etc\hosts` directory and on Linux `/etc/hosts`.
+
 K8S yaml files are located in the `manifests` directory  
 
 DB schema migrations are started automatically each time when initContainers are created.  
@@ -19,7 +27,7 @@ kubectl apply -f .
 Postman collection to test the API endpoints:  
 https://www.getpostman.com/collections/34e65c51347657ff1bb5  
 
-### To install postgres database with `helm`, follow commands below:
+### To install only postgres database with `helm`, follow commands below:
 1) create a new directory:
 ```sh
 mkdir postgres-chart
@@ -43,4 +51,21 @@ Then you can access database using:
 ### To access database from host machine:  
 ``` sh
 kubectl port-forward postgres-statefulset-0 5432:5432
+```
+
+### To install postgres database and application itself with `helm`, follow commands below:
+1) clone this repository  
+2) at the root, run command below:  
+```sh
+helm install app-chart app-chart/ --values app-chart/dev-values.yaml
+```
+where dev-values.yaml are values which will be passed to the build environment and rewrite database build variables.  
+
+## If in your local development database, there is already existing database, which is causing some issues - just drop the tables, sequences, etc. and exec into container, by running code below:  
+```sh
+kubectl exec --stdin --tty deployment/api -c api -- /bin/bash
+```
+and run migration:  
+```sh
+php artisan migrate
 ```
