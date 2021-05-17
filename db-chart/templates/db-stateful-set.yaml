@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-statefulset
+  labels:
+    app: postgres
+spec:
+  serviceName: "postgres"
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        envFrom:
+        - secretRef:
+            name: postgres-root-secret
+        ports:
+        - containerPort: {{ .Values.container.port }}
+          name: postgresdb
+        volumeMounts:
+        - name: pv-data
+          mountPath: {{ .Values.container.mountPath }}
+      volumes:
+      - name: pv-data
+        persistentVolumeClaim:
+          claimName: postgres-pv-claim

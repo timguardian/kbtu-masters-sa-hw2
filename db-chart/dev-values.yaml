@@ -1,0 +1,28 @@
+replicaCount: 1
+
+image:
+  repository: postgres
+  tag: 12
+
+container:
+  mountPath: /var/lib/postgresql/data
+  port: 5432
+
+service:
+  type: NodePort
+
+pv:
+  storage: "5Gi"
+  reclaimPolicy: Delete
+  hostPath: /var/data
+  storageClassName: standard
+  labels:
+    type: local
+
+credentials:
+  db: dGFsa2xpa2U=
+  user: cm9vdA==
+  password: U3g5d3JySnlYbVQyNmdQNw==
+
+nameOverride: "postgres-db-chart"
+fullnameOverride: "postgres-db-chart"
