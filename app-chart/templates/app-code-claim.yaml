@@ -1,0 +1,26 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: code-pv
+spec:
+  storageClassName: {{ .Values.codePersistence.storageClassName }}
+  capacity:
+    storage: {{ .Values.codePersistence.storageCapacity }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {{ .Values.codePersistence.hostPath }}
+  persistentVolumeReclaimPolicy: {{ .Values.codePersistence.reclaimPolicy }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: code-pv-claim
+spec:
+  storageClassName: {{ .Values.codePersistence.storageClassName }}
+  capacity:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.codePersistence.storageCapacity }}

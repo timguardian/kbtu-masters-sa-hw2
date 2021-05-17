@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-api-config-map
+data:
+  APP_NAME: {{ .Values.appConfig.name }}
+  APP_ENV: {{ .Values.appConfig.env }}
+  APP_DEBUG: "{{ .Values.appConfig.debug }}"
+  APP_URL: {{ .Values.appConfig.url }}
+  APP_TIMEZONE: {{ .Values.appConfig.timezone }}
+  LOG_CHANNEL: {{ .Values.appConfig.logChannel }}
+  DB_CONNECTION: {{ .Values.appConfig.dbConnection }}
+  DB_HOST: {{ .Values.appConfig.dbHost }}
+  DB_PORT: "{{ .Values.appConfig.dbPort }}"
+  CACHE_DRIVER: {{ .Values.appConfig.cacheDriver }}
+  QUEUE_CONNECTION: {{ .Values.appConfig.queueConnection }}

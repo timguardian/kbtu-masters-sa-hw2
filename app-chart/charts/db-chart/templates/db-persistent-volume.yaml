@@ -1,0 +1,16 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv
+  labels:
+    app: postgres
+    type: {{ .Values.pv.labels.type }}
+spec:
+  storageClassName: {{ .Values.pv.storageClassName }}
+  capacity:
+    storage: "{{ .Values.pv.storage }}"
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "{{ .Values.pv.hostPath }}"
+  persistentVolumeReclaimPolicy: "{{ .Values.pv.reclaimPolicy }}"

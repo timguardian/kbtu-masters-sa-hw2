@@ -1,0 +1,86 @@
+replicaCount: 2
+
+appImage:
+  repository: timguardian/talklike
+  pullPolicy: IfNotPresent
+  tag: latest
+
+proxyImage:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: latest
+
+appContainer:
+  port: 9000
+  volumeMountPath: /code
+
+proxyContainer:
+  port: 80
+
+codePersistence:
+  storageClassName: standard
+  storageCapacity: 1Gi
+  hostPath: "/code"
+  reclaimPolicy: Delete
+
+appConfig:
+  name: TalkLike
+  env: local
+  debug: true
+  url: http://dev.talklike.kz
+  timezone: UTC
+  logChannel: stack
+  dbConnection: pgsql
+  dbHost: postgres-service
+  dbPort: 5432
+  cacheDriver: file
+  queueConnection: sync
+
+dbCredentials:
+  type: Opaque
+  database: dGFsa2xpa2U=
+  username: cm9vdA==
+  password: U3g5d3JySnlYbVQyNmdQNw==
+
+appCredentials:
+  type: Opaque
+  key: YmFzZTY0OmFwTUFjRUgxNEw1b0pYd2o2ME4yREpmL2NMRlJPWkRwS1NlSU5HMHBiYUk9
+  jwt: dEdDWGI2ZWh1bWszenlVSTNCYXNGVGYzOFVyTm41RThETTFKNzZGU2IyVFF2WFVGY3Y2T3Y2NjJWbDRER2tLTw==
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 80
+
+db-chart:
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: 12
+  container:
+    mountPath: /var/lib/postgresql/data
+    port: 5432
+  service:
+    type: NodePort
+  pv:
+    storage: "5Gi"
+    reclaimPolicy: Delete
+    hostPath: /var/data
+    storageClassName: standard
+    labels:
+      type: local
+  credentials:
+    db: dGFsa2xpa2U=
+    user: cm9vdA==
+    password: U3g5d3JySnlYbVQyNmdQNw==
+  nameOverride: "postgres-db-chart"
+  fullnameOverride: "postgres-db-chart"
+
+
+nameOverride: ""
+fullnameOverride: ""
+
+
+ingress:
+  enabled: true
+  host: dev.talklike.kz

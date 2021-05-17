@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  selector:
+    matchLabels:
+      app: api
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      volumes:
+      - name: code
+        persistentVolumeClaim:
+          claimName: code-pv-claim
+      - name: config
+        configMap:
+          name: nginx-config
+          items:
+          - key: config
+            path: default.conf
+      initContainers:
+        - args:
+            - /bin/bash
+            - -c
+            - (php artisan migrate || true) && (php artisan config:cache || true) && (php
+              artisan route:cache || true) && (cp -rp /var/www /code)
+          envFrom:
+            - secretRef:
+                name: app-api-db-secret
+            - secretRef:
+                name: app-api-secret
+            - configMapRef:
+                name: app-api-config-map
+          image: "{{ .Values.appImage.repository }}:{{ .Values.appImage.tag }}"
+          imagePullPolicy: {{ .Values.appImage.pullPolicy }}
+          name: artisan
+          volumeMounts:
+            - mountPath: {{ .Values.appContainer.volumeMountPath }}
+              name: code
+      containers:
+      - name: api
+        image: "{{ .Values.appImage.repository }}:{{ .Values.appImage.tag }}"
+        envFrom:
+        - secretRef:
+            name: app-api-db-secret
+        - secretRef:
+            name: app-api-secret
+        - configMapRef:
+            name: app-api-config-map
+        ports:
+        - containerPort: {{ .Values.appContainer.port }}
+        volumeMounts:
+        - name: code
+          mountPath: {{ .Values.appContainer.volumeMountPath }}
+      - name: nginx
+        image: "{{ .Values.proxyImage.repository }}:{{ .Values.proxyImage.tag }}"
+        ports:
+        - containerPort: {{ .Values.proxyContainer.port }}
+        volumeMounts:
+        - name: code
+          mountPath: {{ .Values.appContainer.volumeMountPath }}
+        - name: config
+          mountPath: /etc/nginx/conf.d
