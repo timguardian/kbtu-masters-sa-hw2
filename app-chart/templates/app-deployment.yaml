@@ -36,7 +36,7 @@ spec:
         - args:
             - /bin/bash
             - -c
-            - (php artisan migrate || true) && (php artisan config:cache || true) && (php
+            - (php artisan migrate --force || true) && (php artisan config:cache || true) && (php
               artisan route:cache || true) && (cp -rp /var/www {{ .Values.appContainer.volumeMountPath }})
           envFrom:
             - secretRef:
