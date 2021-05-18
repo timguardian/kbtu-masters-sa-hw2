@@ -12,7 +12,7 @@ proxyImage:
 
 appContainer:
   port: 9000
-  volumeMountPath: /code
+  volumeMountPath: /code/qa
 
 proxyContainer:
   port: 80
@@ -20,14 +20,14 @@ proxyContainer:
 codePersistence:
   storageClassName: standard
   storageCapacity: 1Gi
-  hostPath: "/code"
+  hostPath: "/code/qa"
   reclaimPolicy: Delete
 
 appConfig:
   name: TalkLike
-  env: local
+  env: qa
   debug: true
-  url: http://dev.talklike.kz
+  url: http://talklike.kz
   timezone: UTC
   logChannel: stack
   dbConnection: pgsql
@@ -37,8 +37,8 @@ appConfig:
 
 dbCredentials:
   type: Opaque
-  database: dGFsa2xpa2U= # talklike
-  username: cm9vdA== # root
+  database: dGFsa2xpa2UtcWE= # talklike-qa
+  username: cWEtZW5naW5lZXI= # qa-engineer
   password: U3g5d3JySnlYbVQyNmdQNw== # Sx9wrrJyXmT26gP7
 
 appCredentials:
@@ -59,30 +59,30 @@ dbChart:
     repository: postgres
     tag: 12
   container:
-    mountPath: /var/lib/postgresql/data
+    mountPath: /var/lib/postgresql/qa/data
     port: 5432
   service:
     type: NodePort
   pv:
-    name: postgres-pv
+    name: postgres-pv-qa
     storage: "5Gi"
-    reclaimPolicy: Delete
-    hostPath: /var/data
+    reclaimPolicy: Retain
+    hostPath: /var/qa/data
     storageClassName: standard
     labels:
-      type: local
+      type: qa
   credentials:
-    db: dGFsa2xpa2U= # talklike
-    user: cm9vdA== # root
+    db: dGFsa2xpa2UtcWE= # talklike-qa
+    user: cWEtZW5naW5lZXI= # qa-engineer
     password: U3g5d3JySnlYbVQyNmdQNw== # Sx9wrrJyXmT26gP7
-  nameOverride: "postgres-db-chart-local"
-  fullnameOverride: "postgres-db-chart-local"
+  nameOverride: "postgres-db-chart-qa"
+  fullnameOverride: "postgres-db-chart-qa"
 
 
-nameOverride: "talklike-api-local"
-fullnameOverride: "talklike-api-local"
+nameOverride: "talklike-api-qa"
+fullnameOverride: "talklike-api-qa"
 
 
 ingress:
   enabled: true
-  host: dev.talklike.kz
+  host: qa.talklike.kz

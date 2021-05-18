@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: app-ingress
+  name: "{{ include "app-chart.fullname" . }}-app-ingress"
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
@@ -12,6 +12,6 @@ spec:
       paths:
         - path: /
           backend:
-            serviceName: api-service
+            serviceName: "{{ include "app-chart.fullname" . }}-api-service"
             servicePort: 80
 {{- end }}

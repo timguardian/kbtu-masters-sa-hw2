@@ -12,6 +12,7 @@ service:
   type: NodePort
 
 pv:
+  name: postgres-pv
   storage: "5Gi"
   reclaimPolicy: Delete
   hostPath: /var/data

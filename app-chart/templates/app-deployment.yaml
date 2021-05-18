@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: "{{ include "app-chart.fullname" . }}-deployment"
 spec:
   selector:
     matchLabels:
-      app: api
+      app: "{{ include "app-chart.fullname" . }}-api"
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
-        app: api
+        app: "{{ include "app-chart.fullname" . }}-api"
     spec:
       volumes:
       - name: code
         persistentVolumeClaim:
-          claimName: code-pv-claim
+          claimName: "{{ include "app-chart.fullname" . }}-code-pv-claim"
       - name: config
         configMap:
-          name: nginx-config
+          name: "{{ include "app-chart.fullname" . }}-nginx-config"
           items:
           - key: config
             path: default.conf
@@ -37,14 +37,14 @@ spec:
             - /bin/bash
             - -c
             - (php artisan migrate || true) && (php artisan config:cache || true) && (php
-              artisan route:cache || true) && (cp -rp /var/www /code)
+              artisan route:cache || true) && (cp -rp /var/www {{ .Values.appContainer.volumeMountPath }})
           envFrom:
             - secretRef:
-                name: app-api-db-secret
+                name: "{{ include "app-chart.fullname" . }}-app-api-db-secret"
             - secretRef:
-                name: app-api-secret
+                name: "{{ include "app-chart.fullname" . }}-app-api-secret"
             - configMapRef:
-                name: app-api-config-map
+                name: "{{ include "app-chart.fullname" . }}-app-api-config-map"
           image: "{{ .Values.appImage.repository }}:{{ .Values.appImage.tag }}"
           imagePullPolicy: {{ .Values.appImage.pullPolicy }}
           name: artisan
@@ -56,26 +56,26 @@ spec:
         image: "{{ .Values.appImage.repository }}:{{ .Values.appImage.tag }}"
         envFrom:
         - secretRef:
-            name: app-api-db-secret
+            name: "{{ include "app-chart.fullname" . }}-app-api-db-secret"
         - secretRef:
-            name: app-api-secret
+            name: "{{ include "app-chart.fullname" . }}-app-api-secret"
         - configMapRef:
-            name: app-api-config-map
+            name: "{{ include "app-chart.fullname" . }}-app-api-config-map"
         ports:
         - containerPort: {{ .Values.appContainer.port }}
         volumeMounts:
         - name: code
           mountPath: {{ .Values.appContainer.volumeMountPath }}
         - name: logs
-          mountPath: /code/www/storage/logs/
+          mountPath: "{{ .Values.appContainer.volumeMountPath }}/www/storage/logs/"
         - name: cache
-          mountPath: /code/www/storage/framework/cache
+          mountPath: "{{ .Values.appContainer.volumeMountPath }}/www/storage/framework/cache"
         - name: sessions
-          mountPath: /code/www/storage/framework/sessions
+          mountPath: "{{ .Values.appContainer.volumeMountPath }}/www/storage/framework/sessions"
         - name: views
-          mountPath: /code/www/storage/framework/views
+          mountPath: "{{ .Values.appContainer.volumeMountPath }}/www/storage/framework/views"
         - name: testing
-          mountPath: /code/www/storage/framework/testing
+          mountPath: "{{ .Values.appContainer.volumeMountPath }}/www/storage/framework/testing"
       - name: nginx
         image: "{{ .Values.proxyImage.repository }}:{{ .Values.proxyImage.tag }}"
         ports:

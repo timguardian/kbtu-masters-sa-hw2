@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: app-api-config-map
+  name: "{{ include "app-chart.fullname" . }}-app-api-config-map"
 data:
   APP_NAME: {{ .Values.appConfig.name }}
   APP_ENV: {{ .Values.appConfig.env }}
@@ -10,7 +10,7 @@ data:
   APP_TIMEZONE: {{ .Values.appConfig.timezone }}
   LOG_CHANNEL: {{ .Values.appConfig.logChannel }}
   DB_CONNECTION: {{ .Values.appConfig.dbConnection }}
-  DB_HOST: {{ .Values.appConfig.dbHost }}
+  DB_HOST: "{{ .Values.dbChart.fullnameOverride }}-postgres-service"
   DB_PORT: "{{ .Values.appConfig.dbPort }}"
   CACHE_DRIVER: {{ .Values.appConfig.cacheDriver }}
   QUEUE_CONNECTION: {{ .Values.appConfig.queueConnection }}

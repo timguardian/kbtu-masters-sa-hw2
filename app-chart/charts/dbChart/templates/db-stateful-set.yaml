@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-statefulset
+  name: "{{ include "app-chart.fullname" . }}-postgres-statefulset"
   labels:
     app: postgres
 spec:
@@ -20,7 +20,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         envFrom:
         - secretRef:
-            name: postgres-root-secret
+            name: "{{ include "app-chart.fullname" . }}-postgres-root-secret"
         ports:
         - containerPort: {{ .Values.container.port }}
           name: postgresdb
@@ -30,4 +30,4 @@ spec:
       volumes:
       - name: pv-data
         persistentVolumeClaim:
-          claimName: postgres-pv-claim
+          claimName: "{{ include "app-chart.fullname" . }}-postgres-pv-claim"

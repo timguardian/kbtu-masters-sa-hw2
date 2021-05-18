@@ -1,7 +1,7 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: code-pv
+  name: "{{ include "app-chart.fullname" . }}-code-pv"
 spec:
   storageClassName: {{ .Values.codePersistence.storageClassName }}
   capacity:
@@ -15,7 +15,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: code-pv-claim
+  name: "{{ include "app-chart.fullname" . }}-code-pv-claim"
 spec:
   storageClassName: {{ .Values.codePersistence.storageClassName }}
   capacity:

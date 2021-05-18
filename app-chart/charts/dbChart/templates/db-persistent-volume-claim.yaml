@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: postgres-pv-claim
+  name: "{{ include "app-chart.fullname" . }}-postgres-pv-claim"
   labels:
     app: postgres
 spec:
